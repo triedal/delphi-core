@@ -1,4 +1,4 @@
-delphi_core
+delphi-core
 ===========
 
 .. image:: https://img.shields.io/pypi/v/delphi_core.svg
