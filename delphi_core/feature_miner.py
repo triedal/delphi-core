@@ -11,6 +11,15 @@ class PEMiner(object):
         pass
         
     def __extract_features(self, path, is_malware):
+        """Extracts features from a single PE file.
+        
+        Args:
+            path (str): Path to PE file.
+            is_malware (bool): Used for labeling. Denotes whether the file is malware or not.
+            
+        Returns:
+            dict: Contains the mined features.
+        """
         pe = pefile.PE(path, fast_load=True)
         features = {
             'e_cblp':                      pe.DOS_HEADER.e_cblp,
@@ -50,11 +59,11 @@ class PEMiner(object):
         in the test_data directory.
         
         Returns:
-            Pandas dataframe object.
+            pandas.DataFrame: Complete dataframe object with features from dataset.
         """
         root = cfg['paths']['proj_root']
-        maldir = cfg['paths']['train_dirs']['malware']
-        bendir = cfg['paths']['train_dirs']['benign']
+        maldir = cfg['paths']['data_dirs']['malware']
+        bendir = cfg['paths']['data_dirs']['benign']
         mal_paths = glob.glob(root + maldir + '/*.exe')
         ben_paths = glob.glob(root + bendir + '/*.exe')
         
