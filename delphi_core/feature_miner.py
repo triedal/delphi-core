@@ -67,7 +67,5 @@ class PEMiner(object):
 if __name__ == '__main__':
     miner = PEMiner()
     miner.get_feature_set()
-    # pe_miner.extract_raw_features(sys.argv[1])
-    # print pd.DataFrame([miner.extract_features(path) for path in paths]).to_string()
     
     
