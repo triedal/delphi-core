@@ -53,8 +53,8 @@ class PEMiner(object):
             Pandas dataframe object.
         """
         root = cfg['paths']['proj_root']
-        maldir = cfg['paths']['test_dirs']['malware']
-        bendir = cfg['paths']['test_dirs']['benign']
+        maldir = cfg['paths']['train_dirs']['malware']
+        bendir = cfg['paths']['train_dirs']['benign']
         mal_paths = glob.glob(root + maldir + '/*.exe')
         ben_paths = glob.glob(root + bendir + '/*.exe')
         

@@ -1,6 +1,6 @@
 # Template values <var> are overridden in config.py\
 paths:
     proj_root: <root_path>
-    test_dirs:
-        benign: /test_data/benign
-        malware: /test_data/malware
+    train_dirs:
+        benign: /training_data/benign
+        malware: /training_data/malware
