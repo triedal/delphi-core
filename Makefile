@@ -2,7 +2,7 @@ clean:
 	@find . -name '*.pyc' -delete
 	
 lint:
-	@find . -iname "*.py" | xargs pylint
+	@find delphi_core -iname "*.py" | xargs pylint
 	
 help:
 	@echo "    clean"

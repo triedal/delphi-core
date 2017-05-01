@@ -1,9 +1,14 @@
+"""
+This module builds the globally accessed config object.
+"""
+
 from os.path import abspath, dirname, join
 import yaml
 
-def replace_template_vals(cfg):
-    cfg['paths']['proj_root'] = dirname(dirname(abspath(__file__)))
-    return cfg
+def replace_template_vals(mycfg):
+    """Replaces the template variables in config.yml"""
+    mycfg['paths']['proj_root'] = dirname(dirname(abspath(__file__)))
+    return mycfg
 
 cwd = dirname(__file__)
 fpath = join(cwd, "config/config.yml")

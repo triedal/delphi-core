@@ -1,24 +1,27 @@
+"""Contains different classes associated with feature mining."""
+
 import pefile
 import glob
 import pandas as pd
 from sqlalchemy import create_engine
-from config import cfg
+from delphi_core.config import cfg
 
 engine = create_engine(cfg['sql_connection'])
 
 class PEMiner(object):
     """This class is used to mine PE header data from Windows PE files."""
-    
+
     def __init__(self):
         pass
-        
-    def __extract_features(self, path, is_malware):
+
+    @staticmethod
+    def __extract_features(path, is_malware):
         """Extracts features from a single PE file.
-        
+
         Args:
             path (str): Path to PE file.
             is_malware (bool): Used for labeling. Denotes whether the file is malware or not.
-            
+
         Returns:
             dict: Contains the mined features.
         """
@@ -55,30 +58,29 @@ class PEMiner(object):
             'Type':                        ('benign', 'malware')[is_malware]
         }
         return features
-        
+
     def get_feature_set(self):
         """Builds dataframe by extracting features from Windows PE files. Files are located
         in the test_data directory.
-        
+
         Returns:
             pandas.DataFrame: Complete dataframe object with features from dataset.
         """
-        if (cfg['read_features_from_db']):
+        if cfg['read_features_from_db']:
             df = pd.read_sql_table('mal_clf_features', engine)
-        else:    
+        else:
             root = cfg['paths']['proj_root']
             maldir = cfg['paths']['data_dirs']['malware']
             bendir = cfg['paths']['data_dirs']['benign']
             mal_paths = glob.glob(root + maldir + '/*.exe')
             ben_paths = glob.glob(root + bendir + '/*.exe')
-            
+
             # TODO: I think there is a way to make this faster. Concatenating doesn't seem like the best option.
             mal_df = pd.DataFrame([self.__extract_features(path, True) for path in mal_paths])
             ben_df = pd.DataFrame([self.__extract_features(path, False) for path in ben_paths])
-            
+
             # ignore_index=True reindexes the dataframe so we do not have duplicate indexes
             df = pd.concat([mal_df, ben_df], ignore_index=True)
             df.to_sql('mal_clf_features', engine, if_exists='append')
-        
-        return df    
-    
+
+        return df
