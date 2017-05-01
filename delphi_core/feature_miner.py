@@ -5,7 +5,7 @@ from config import cfg
 
 
 class PEMiner(object):
-    '''This class is used to mine PE header data from Windows PE files.'''
+    """This class is used to mine PE header data from Windows PE files."""
     
     def __init__(self):
         pass
@@ -50,7 +50,7 @@ class PEMiner(object):
             'SizeOfHeapReserve':           pe.OPTIONAL_HEADER.SizeOfHeapReserve,
             'SizeOfHeapCommit':            pe.OPTIONAL_HEADER.SizeOfHeapCommit,
             'LoaderFlags':                 pe.OPTIONAL_HEADER.LoaderFlags,
-            'Classification':              ('benign', 'malware')[is_malware]
+            'Type':                        ('benign', 'malware')[is_malware]
         }
         return features
         
@@ -71,10 +71,5 @@ class PEMiner(object):
         mal_df = pd.DataFrame([self.__extract_features(path, True) for path in mal_paths])
         ben_df = pd.DataFrame([self.__extract_features(path, False) for path in ben_paths])
         df = pd.concat([mal_df, ben_df])
-        return df
-
-if __name__ == '__main__':
-    miner = PEMiner()
-    miner.get_feature_set()
-    
+        return df    
     

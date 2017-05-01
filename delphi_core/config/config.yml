@@ -4,3 +4,4 @@ paths:
     data_dirs:
         benign: /dataset/benign
         malware: /dataset/malware
+test_size: 0.30
