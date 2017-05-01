@@ -1,8 +1,10 @@
 import pefile
 import glob
 import pandas as pd
+from sqlalchemy import create_engine
 from config import cfg
 
+engine = create_engine(cfg['sql_connection'])
 
 class PEMiner(object):
     """This class is used to mine PE header data from Windows PE files."""
@@ -61,15 +63,22 @@ class PEMiner(object):
         Returns:
             pandas.DataFrame: Complete dataframe object with features from dataset.
         """
-        root = cfg['paths']['proj_root']
-        maldir = cfg['paths']['data_dirs']['malware']
-        bendir = cfg['paths']['data_dirs']['benign']
-        mal_paths = glob.glob(root + maldir + '/*.exe')
-        ben_paths = glob.glob(root + bendir + '/*.exe')
+        if (cfg['read_features_from_db']):
+            df = pd.read_sql_table('mal_clf_features', engine)
+        else:    
+            root = cfg['paths']['proj_root']
+            maldir = cfg['paths']['data_dirs']['malware']
+            bendir = cfg['paths']['data_dirs']['benign']
+            mal_paths = glob.glob(root + maldir + '/*.exe')
+            ben_paths = glob.glob(root + bendir + '/*.exe')
+            
+            # TODO: I think there is a way to make this faster. Concatenating doesn't seem like the best option.
+            mal_df = pd.DataFrame([self.__extract_features(path, True) for path in mal_paths])
+            ben_df = pd.DataFrame([self.__extract_features(path, False) for path in ben_paths])
+            
+            # ignore_index=True reindexes the dataframe so we do not have duplicate indexes
+            df = pd.concat([mal_df, ben_df], ignore_index=True)
+            df.to_sql('mal_clf_features', engine, if_exists='append')
         
-        # TODO: I think there is a way to make this faster. Concatenating doesn't seem like the best option.
-        mal_df = pd.DataFrame([self.__extract_features(path, True) for path in mal_paths])
-        ben_df = pd.DataFrame([self.__extract_features(path, False) for path in ben_paths])
-        df = pd.concat([mal_df, ben_df])
         return df    
     

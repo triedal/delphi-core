@@ -5,3 +5,11 @@ paths:
         benign: /dataset/benign
         malware: /dataset/malware
 test_size: 0.30
+sql_connection: postgresql://awsuser:awsuser1@rsolutionsdbs.cwdgwlocvc3p.us-west-2.rds.amazonaws.com:5432/feature_store
+
+# Specifies where to retrieve features from.
+#
+# Options:
+#   True: retrieves from SQL db
+#   False: parses raw PE files 
+read_features_from_db: True
