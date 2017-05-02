@@ -1,10 +1,15 @@
 """This module provides the class used to classify PE files."""
 
-from delphi_core.feature_miner import PEMiner
+from feature_miner import PEMiner
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
-from delphi_core.config import cfg
+from config import cfg
 
+
+CLASSIFICATION_TYPES = {
+    'malware': 1,
+    'benign': 0
+}
 
 class Classifier(object):
     """Classifier used to predict malware."""
@@ -21,6 +26,11 @@ class Classifier(object):
         # y: only "Type" column
         x_train, x_test, y_train, y_test = train_test_split(df[df.columns.difference(['Type'])], df['Type'],
                                                             test_size=cfg['test_size'], random_state=42)
+
+        # Convert 'malware' and 'benign' to ints
+        y_train = y_train.apply(lambda x: CLASSIFICATION_TYPES[x])
+        y_test = y_test.apply(lambda x: CLASSIFICATION_TYPES[x])
+
         self.clf.fit(x_train, y_train)
 
 if __name__ == "__main__":

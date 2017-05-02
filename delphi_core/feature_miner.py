@@ -4,7 +4,7 @@ import pefile
 import glob
 import pandas as pd
 from sqlalchemy import create_engine
-from delphi_core.config import cfg
+from config import cfg
 
 engine = create_engine(cfg['sql_connection'])
 
