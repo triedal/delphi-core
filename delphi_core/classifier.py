@@ -4,7 +4,6 @@ from feature_miner import PEMiner
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from config import cfg
-import logging
 
 
 CLASSIFICATION_TYPES = {
@@ -35,6 +34,5 @@ class Classifier(object):
         self.clf.fit(x_train, y_train)
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
     clf = Classifier()
     

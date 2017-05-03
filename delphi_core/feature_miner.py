@@ -5,8 +5,9 @@ import glob
 import logging
 import pandas as pd
 from sqlalchemy import create_engine
-from tqdm import tqdm, trange
+from tqdm import tqdm
 from config import cfg
+from datetime import datetime
 
 engine = create_engine(cfg['sql_connection'])
 logger = logging.getLogger(__name__)
@@ -62,32 +63,47 @@ class PEMiner(object):
         }
         return features
 
-    def get_feature_set(self):
-        """Builds dataframe by extracting features from Windows PE files. Files are located
-        in the test_data directory.
+    @staticmethod
+    def get_feature_set():
+        """Reads dataframe from SQL database.
 
         Returns:
             pandas.DataFrame: Complete dataframe object with features from dataset.
         """
-        if cfg['read_features_from_db']:
-            df = pd.read_sql_table('mal_clf_features', engine)
-        else:
-            root = cfg['paths']['proj_root']
-            maldir = cfg['paths']['data_dirs']['malware']
-            bendir = cfg['paths']['data_dirs']['benign']
-            mal_paths = glob.glob(root + maldir + '/*.exe')
-            ben_paths = glob.glob(root + bendir + '/*.exe')
-
-            print '\n----- MINING STATUS -----\n'
-            # TODO: I think there is a way to make this faster. Concatenating doesn't seem like the best option.
-            mal_df = pd.DataFrame([self.__extract_features(path, True) for path in tqdm(mal_paths, desc='Mal', ncols=75)])
-            ben_df = pd.DataFrame([self.__extract_features(path, False) for path in tqdm(ben_paths, desc='Ben', ncols =75)])
-            print '\n-------------------------\n'
-
-            # ignore_index=True reindexes the dataframe so we do not have duplicate indexes
-            df = pd.concat([mal_df, ben_df], ignore_index=True)
-            
-            logger.info(' [!] Saving features to database.')
-            df.to_sql('mal_clf_features', engine, if_exists='append')
-
+        # TODO: Add exception here for if db read fails.
+        df = pd.read_sql_table('mal_clf_features', engine)
         return df
+
+    def mine_features_to_csv(self):
+        """"Builds dataframe by extracting features from Windows PE files and exports dataframe
+        to CSV file. Places CSV in current working directory.
+        """
+        root = cfg['paths']['proj_root']
+        maldir = cfg['paths']['data_dirs']['malware']
+        bendir = cfg['paths']['data_dirs']['benign']
+        mal_paths = glob.glob(root + maldir + '/*.exe')
+        ben_paths = glob.glob(root + bendir + '/*.exe')
+
+        print '\n----- MINING STATUS -----\n'
+        # TODO: I think there is a way to make this faster. Concatenating doesn't seem like the best option.
+        mal_df = pd.DataFrame([self.__extract_features(path, True) for path in tqdm(mal_paths, desc='Mal', ncols=75)])
+        ben_df = pd.DataFrame([self.__extract_features(path, False) for path in tqdm(ben_paths, desc='Ben', ncols=75)])
+        print '\n-------------------------\n'
+
+        # ignore_index=True reindexes the dataframe so we do not have duplicate indexes
+        df = pd.concat([mal_df, ben_df], ignore_index=True)
+
+        logger.info(' [!] Exporting features to CSV.')
+        fname = 'features-' + datetime.now().strftime("%Y%m%d-%H%M%S") + '.csv'
+        df.to_csv(fname)
+
+    @staticmethod
+    def save_csv_to_db(fpath):
+        """Reads CSV file into dataframe and then saves dataframe to SQL db.
+
+        Args:
+            fpath (str): Path to PE file.
+        """
+        df = pd.read_csv(fpath, index_col=0)
+        logger.info(' [!] Saving features to db.')
+        df.to_sql('mal_clf_features', engine, if_exists='append')

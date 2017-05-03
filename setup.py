@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(
-    name="delphi_core",
+    name="dcore",
     version="0.1.0",
     url="https://github.com/triedal/delphi-core.git",
 
@@ -13,7 +13,9 @@ setuptools.setup(
 
     packages=setuptools.find_packages(),
 
-    install_requires=[],
+    install_requires=[
+        'Click'
+    ],
 
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
@@ -24,4 +26,9 @@ setuptools.setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
+    entry_points={
+        'console_scripts': [
+            'dcore = delphi_core.cli:cli'
+        ]
+    }
 )
