@@ -2,11 +2,14 @@
 
 import pefile
 import glob
+import logging
 import pandas as pd
 from sqlalchemy import create_engine
+from tqdm import tqdm, trange
 from config import cfg
 
 engine = create_engine(cfg['sql_connection'])
+logger = logging.getLogger(__name__)
 
 class PEMiner(object):
     """This class is used to mine PE header data from Windows PE files."""
@@ -75,12 +78,16 @@ class PEMiner(object):
             mal_paths = glob.glob(root + maldir + '/*.exe')
             ben_paths = glob.glob(root + bendir + '/*.exe')
 
+            print '\n----- MINING STATUS -----\n'
             # TODO: I think there is a way to make this faster. Concatenating doesn't seem like the best option.
-            mal_df = pd.DataFrame([self.__extract_features(path, True) for path in mal_paths])
-            ben_df = pd.DataFrame([self.__extract_features(path, False) for path in ben_paths])
+            mal_df = pd.DataFrame([self.__extract_features(path, True) for path in tqdm(mal_paths, desc='Mal', ncols=75)])
+            ben_df = pd.DataFrame([self.__extract_features(path, False) for path in tqdm(ben_paths, desc='Ben', ncols =75)])
+            print '\n-------------------------\n'
 
             # ignore_index=True reindexes the dataframe so we do not have duplicate indexes
             df = pd.concat([mal_df, ben_df], ignore_index=True)
+            
+            logger.info(' [!] Saving features to database.')
             df.to_sql('mal_clf_features', engine, if_exists='append')
 
         return df

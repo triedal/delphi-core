@@ -12,4 +12,4 @@ sql_connection: postgresql://awsuser:awsuser1@rsolutionsdbs.cwdgwlocvc3p.us-west
 # Options:
 #   True: retrieves from SQL db
 #   False: parses raw PE files 
-read_features_from_db: True
+read_features_from_db: False
