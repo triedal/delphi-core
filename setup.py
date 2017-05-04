@@ -10,7 +10,7 @@ setuptools.setup(
 
     description="Core for delphi AV software",
     long_description=open('README.rst').read(),
-
+    include_package_data=True,
     packages=setuptools.find_packages(),
 
     install_requires=[
@@ -55,9 +55,14 @@ setuptools.setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
+
     entry_points={
         'console_scripts': [
             'dcore = delphi_core.cli:cli'
         ]
-    }
+    },
+
+    data_files=[
+        ('config', ['delphi_core/config/config.yml'])
+    ]
 )
