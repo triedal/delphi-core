@@ -4,6 +4,11 @@ from feature_miner import PEMiner
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from config import cfg
+from sklearn.externals import joblib
+import logging
+import sys
+
+logger = logging.getLogger(__name__)
 
 
 CLASSIFICATION_TYPES = {
@@ -13,11 +18,19 @@ CLASSIFICATION_TYPES = {
 
 class Classifier(object):
     """Classifier used to predict malware."""
-    def __init__(self, train=False):
-        self.clf = DecisionTreeClassifier()
+    def __init__(self, fmodel=None, train=False):
+        self.clf = None
 
         if train:
+            self.clf = DecisionTreeClassifier()
             self.__train_model()
+            joblib.dump(self.clf, 'finalized_model.pkl')
+        else:
+            if fmodel is not None and fmodel.endswith('.pkl'):
+                self.clf = joblib.load(fmodel)
+            else:
+                logger.critical(' [X] Could not load pickle model.\nExiting.')
+                sys.exit(1)
 
     def __train_model(self):
         """Trains classification model."""

@@ -29,7 +29,7 @@ def upload(f):
 
 @cli.command()
 def train():
-    """Trains classifier."""
+    """Trains classifier and exports model to file."""
     Classifier(train=True)
 
 

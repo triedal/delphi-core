@@ -35,5 +35,6 @@ nosetests.xml
 .project
 .pydevprojecti
 
-# Project Folders
+# Project Folders/Files
 dataset
+*.pkl
