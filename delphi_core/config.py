@@ -2,7 +2,7 @@
 This module builds the globally accessed config object.
 """
 
-from os.path import abspath, dirname, join
+from os.path import dirname, join
 import yaml
 
 def replace_template_vals(mycfg):

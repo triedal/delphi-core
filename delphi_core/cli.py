@@ -3,6 +3,7 @@
 import click
 import logging
 from feature_miner import PEMiner
+from classifier import Classifier
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -25,6 +26,13 @@ def upload(f):
     """Uploads features from CSV file to SQL db."""
     miner = PEMiner()
     miner.save_csv_to_db(f)
+
+@cli.command()
+def train():
+    """Trains classifier."""
+    Classifier(train=True)
+
+
 
 if __name__ == "__main__":
     cli()

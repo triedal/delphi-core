@@ -13,9 +13,11 @@ CLASSIFICATION_TYPES = {
 
 class Classifier(object):
     """Classifier used to predict malware."""
-    def __init__(self):
+    def __init__(self, train=False):
         self.clf = DecisionTreeClassifier()
-        self.__train_model()
+
+        if train:
+            self.__train_model()
 
     def __train_model(self):
         """Trains classification model."""

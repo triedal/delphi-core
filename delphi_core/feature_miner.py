@@ -3,13 +3,14 @@
 import pefile
 import glob
 import logging
+import sys
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, exc
 from tqdm import tqdm
 from config import cfg
 from datetime import datetime
 
-engine = create_engine(cfg['sql_connection'])
+engine = create_engine(cfg['sql_connection'], connect_args={'connect_timeout': 5})
 logger = logging.getLogger(__name__)
 
 class PEMiner(object):
@@ -29,7 +30,11 @@ class PEMiner(object):
         Returns:
             dict: Contains the mined features.
         """
-        pe = pefile.PE(path, fast_load=True)
+        try:
+            pe = pefile.PE(path, fast_load=True)
+        except pefile.PEFormatError as err:
+            return {}
+
         features = {
             'e_cblp':                      pe.DOS_HEADER.e_cblp,
             'e_cp':                        pe.DOS_HEADER.e_cp,
@@ -70,8 +75,13 @@ class PEMiner(object):
         Returns:
             pandas.DataFrame: Complete dataframe object with features from dataset.
         """
-        # TODO: Add exception here for if db read fails.
-        df = pd.read_sql_table('mal_clf_features', engine)
+        try:
+            df = pd.read_sql_table('mal_clf_features', engine)
+        except exc.SQLAlchemyError as err:
+            logger.critical(' [X] %s', err)
+            logger.critical(' [X] Exiting.')
+            sys.exit(1)
+
         return df
 
     def mine_features_to_csv(self, mdir, bdir):
@@ -85,10 +95,17 @@ class PEMiner(object):
         # TODO: I think there is a way to make this faster. Concatenating doesn't seem like the best option.
         mal_df = pd.DataFrame([self.__extract_features(path, True) for path in tqdm(mal_paths, desc='Mal', ncols=75)])
         ben_df = pd.DataFrame([self.__extract_features(path, False) for path in tqdm(ben_paths, desc='Ben', ncols=75)])
-        print '\n-------------------------\n'
 
         # ignore_index=True reindexes the dataframe so we do not have duplicate indexes
         df = pd.concat([mal_df, ben_df], ignore_index=True)
+
+        if pd.isnull(df).values.any():
+            df = df.dropna(how='all')
+            df.reset_index(drop=True, inplace=True)
+
+        print '\nTotal features: {}'.format(df.shape[1]-1)
+        print 'Total samples:  {}'.format(df.shape[0])
+        print '-------------------------\n'
 
         logger.info(' [!] Exporting features to CSV.')
         fname = 'features-' + datetime.now().strftime("%Y%m%d-%H%M%S") + '.csv'
