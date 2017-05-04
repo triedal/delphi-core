@@ -14,7 +14,36 @@ setuptools.setup(
     packages=setuptools.find_packages(),
 
     install_requires=[
-        'Click'
+        'appdirs',
+        'astroid',
+        'backports.functools-lru-cache',
+        'click',
+        'configparser',
+        'enum34',
+        'future',
+        'isort',
+        'lazy-object-proxy',
+        'mccabe',
+        'MySQL-python',
+        'numpy',
+        'packaging',
+        'pandas',
+        'pefile',
+        'psycopg2',
+        'py',
+        'pylint',
+        'pyparsing',
+        'pytest',
+        'python-dateutil',
+        'pytz',
+        'PyYAML',
+        'scikit-learn',
+        'scipy',
+        'singledispatch',
+        'six',
+        'SQLAlchemy',
+        'tqdm',
+        'wrapt'
     ],
 
     classifiers=[
