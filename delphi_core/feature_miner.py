@@ -74,15 +74,12 @@ class PEMiner(object):
         df = pd.read_sql_table('mal_clf_features', engine)
         return df
 
-    def mine_features_to_csv(self):
+    def mine_features_to_csv(self, mdir, bdir):
         """"Builds dataframe by extracting features from Windows PE files and exports dataframe
         to CSV file. Places CSV in current working directory.
         """
-        root = cfg['paths']['proj_root']
-        maldir = cfg['paths']['data_dirs']['malware']
-        bendir = cfg['paths']['data_dirs']['benign']
-        mal_paths = glob.glob(root + maldir + '/*.exe')
-        ben_paths = glob.glob(root + bendir + '/*.exe')
+        mal_paths = glob.glob(mdir + '/*.exe')
+        ben_paths = glob.glob(bdir + '/*.exe')
 
         print '\n----- MINING STATUS -----\n'
         # TODO: I think there is a way to make this faster. Concatenating doesn't seem like the best option.

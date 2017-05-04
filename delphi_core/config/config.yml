@@ -1,9 +1,4 @@
 # Template values <var> are overridden in config.py\
-paths:
-    proj_root: <root_path>
-    data_dirs:
-        benign: /dataset/benign
-        malware: /dataset/malware
 test_size: 0.30
 sql_connection: postgresql://awsuser:awsuser1@rsolutionsdbs.cwdgwlocvc3p.us-west-2.rds.amazonaws.com:5432/feature_store
 

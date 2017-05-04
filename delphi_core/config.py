@@ -7,7 +7,6 @@ import yaml
 
 def replace_template_vals(mycfg):
     """Replaces the template variables in config.yml"""
-    mycfg['paths']['proj_root'] = dirname(dirname(abspath(__file__)))
     return mycfg
 
 cwd = dirname(__file__)
